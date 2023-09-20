@@ -17,8 +17,8 @@ def search_for_ext(rootdir, extension = 'tif', look_one_level_down=False):
         if look_one_level_down:
             dirs = natsorted(os.listdir(rootdir))
             for d in dirs:
-                if os.path.isdir(os.path.join(rootdir,d)):
-                    tmp = glob.glob(os.path.join(rootdir, d, '*.'+extension))
+                if os.path.isdir(os.path.join(rootdir,d,'raw_imaging_data')):
+                    tmp = glob.glob(os.path.join(rootdir, d, 'raw_imaging_data', '*.'+extension))
                     if len(tmp):
                         filepaths.extend([t for t in natsorted(tmp)])
     if len(filepaths):
@@ -85,7 +85,8 @@ def list_files(froot, look_one_level_down, exts):
         for folder_down in fdir:
             fsnew = []
             for e in exts:
-                lpath = os.path.join(folder_down, e)
+                #lpath = os.path.join(folder_down, e)
+                lpath = os.path.join(folder_down, 'raw_imaging_data',e)
                 fsnew.extend(glob.glob(lpath))
             fsnew = natsorted(set(fsnew))
             if len(fsnew) > 0:
@@ -126,6 +127,7 @@ def get_tif_list(ops):
     if ops['tiff_list'], then ops['data_path'][0] / ops['tiff_list'] ONLY
     """
     froot = ops['data_path']
+    print(froot)
     # use a user-specified list of tiffs
     if 'tiff_list' in ops:
         fsall = []
