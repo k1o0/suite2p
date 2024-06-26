@@ -188,7 +188,7 @@ def tiff_to_binary(ops):
         while 1:
             im = read_tiff(file, tif, Ltif, ix, batch_size, use_sktiff)
             if im is None:
-                break          
+                break
             nframes = im.shape[0]
             for j in range(0, nplanes):
                 if ik == 0 and ix == 0:
@@ -280,10 +280,10 @@ def mesoscan_to_binary(ops):
         ops["nrois"] = len(ops["lines"])
     nplanes = ops["nplanes"]
 
-    if "slices" not in ops: #this is s2p default, where each roi is defined on all planes
+    if "slices" not in ops:  # this is s2p default, where each roi is defined on all planes
         print("NOTE: nplanes %d nrois %d => ops['nplanes'] = %d" %
               (nplanes, ops["nrois"], ops["nrois"] * nplanes))
-        # multiply lines across planes 
+        # multiply lines across planes
         lines = ops["lines"].copy()
         dy = ops["dy"].copy()
         dx = ops["dx"].copy()
@@ -297,16 +297,15 @@ def mesoscan_to_binary(ops):
             ops["dx"][n::ops["nrois"]] = [dx[n]] * nplanes
             ops["iplane"][n::ops["nrois"]] = np.arange(0, nplanes, 1, int)
         ops["nplanes"] = nplanes * ops["nrois"]
-    else #each roi has uniquely defined slice nr. and lines indexes so no need to multiply across planes
+    else:  # each roi has uniquely defined slice nr. and lines indexes so no need to multiply across planes
         print("NOTE: nslices %d nrois %d => ops['nplanes'] = %d" %
               (len(ops["slices"]), ops["nrois"], ops["nrois"]))
-        ops["nplanes"] = ops["nrois"] #WARNING ops["nplanes"] is now total number of FOVs, not nr of unique zplanes!
-        ops["iplane"] = ops["slices"] #WARNING ops["iplane"] is now the list of slice indices!
+        ops["nplanes"] = ops["nrois"]  # WARNING ops["nplanes"] is now total number of FOVs, not nr of unique zplanes!
+        ops["iplane"] = ops["slices"]  # WARNING ops["iplane"] is now the list of slice indices!
 
-    ops1 = utils.init_ops(ops) #this makes a list of ops files, one per FOV
+    ops1 = utils.init_ops(ops)  # this makes a list of ops files, one per FOV
 
-
-    # this shouldn"t make it here
+    # this shouldn't make it here
     if "lines" not in ops:
         for j in range(len(ops1)):
             ops1[j] = {**ops1[j], **opsj[j]}.copy()
@@ -456,7 +455,7 @@ def ome_to_binary(ops):
         ops1[0]["nchannels"] = 1
     nchannels = ops1[0]["nchannels"]
     print(f"nchannels = {nchannels}")
-    
+
     # loop over all tiffs
     TiffReader = ScanImageTiffReader if HAS_SCANIMAGE else TiffFile
     with TiffReader(fs_Ch1[0]) as tif:
@@ -467,7 +466,7 @@ def ome_to_binary(ops):
             n_pages = len(tif.pages)
             im0 = tif.pages[0].asarray()
             shape = im0.shape
-    
+
     for ops1_0 in ops1:
         ops1_0["nframes"] = 0
         ops1_0["frames_per_folder"][0] = 0
@@ -492,7 +491,7 @@ def ome_to_binary(ops):
     for ik, file in enumerate(fs_Ch1):
         ip = iplanes[ik]
         # read tiff
-        if n_pages==1:    
+        if n_pages==1:
             with TiffReader(file) as tif:
                 im = tif.data()  if HAS_SCANIMAGE else tif.pages[0].asarray()
             if im.dtype.type == np.uint16:
@@ -512,7 +511,7 @@ def ome_to_binary(ops):
             while 1:
                 im = read_tiff(file, tif, Ltif, ix, batch_size, use_sktiff)
                 if im is None:
-                    break          
+                    break
                 nframes = im.shape[0]
                 ix += nframes
                 itot += nframes
@@ -523,7 +522,7 @@ def ome_to_binary(ops):
                 ops1[ip]["frames_per_folder"][0] += nframes
                 if itot % 1000 == 0:
                     print("%d frames of binary, time %0.2f sec." % (itot, time.time() - t0))
-                gc.collect()            
+                gc.collect()
 
     if nchannels > 1:
         itot = 0
@@ -543,7 +542,7 @@ def ome_to_binary(ops):
                 while 1:
                     im = read_tiff(file, tif, Ltif, ix, batch_size, use_sktiff)
                     if im is None:
-                        break          
+                        break
                     nframes = im.shape[0]
                     ix += nframes
                     itot += nframes
